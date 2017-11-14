@@ -32,4 +32,5 @@ window.c2d = {};
   c2d.Rectangle = require('./Rectangle');
   c2d.Image = require('./Image');
   c2d.Text = require('./Text');
+  c2d.HitRegion = require('./HitRegion');
 })()
