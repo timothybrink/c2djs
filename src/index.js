@@ -1,5 +1,5 @@
 /**
- * c2d.js v1.3
+ * c2d.js v1.4
  * c2d.js is a low-level 2D canvas wrapper that makes working with simple shapes
  * and sprites simple and easy. It uses a heirarchical object-oriented approach
  * to creating and manipulating shapes.
