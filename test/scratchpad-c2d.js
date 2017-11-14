@@ -66,6 +66,7 @@ function init() {
   text.color = 'red';
   text.rotation = .1;
   text.border = new c2d.Border('blue');
+  text.shadow = new c2d.Shadow('green', 10, 10, 10);
   scene.appendChild(text);
   
   // background color

@@ -11,17 +11,29 @@ module.exports = class Text extends Shape {
   }
   _renderSelf () {
     var pos = this.getPos(), c = this.context;
+
     c.save();
     this.transformContext();
+
     c.font = this.fontSize + ' ' + this.fontFamily;
+
+    if (this.shadow) {
+      c.shadowBlur = this.shadow.blur;
+      c.shadowColor = this.shadow.color;
+      c.shadowOffsetX = this.shadow.offsetX;
+      c.shadowOffsetY = this.shadow.offsetY;
+    }
+
     if (this.border) {
       c.strokeStyle = this.border.color;
       // lineWidth does not appear to work, but it does not seem entirely necessary.
       c.lineWidth = this.border.width;
       c.strokeText(this.text, pos.x, pos.y);
     }
+
     c.fillStyle = this.color;
     c.fillText(this.text, pos.x, pos.y);
+    
     c.restore();
   }
   get center () {
