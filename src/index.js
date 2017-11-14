@@ -31,5 +31,5 @@ window.c2d = {};
   c2d.Circle = require('./Circle');
   c2d.Rectangle = require('./Rectangle');
   c2d.Image = require('./Image');
-// c2d.Text = require('./Text');
+  c2d.Text = require('./Text');
 })()

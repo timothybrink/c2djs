@@ -2,15 +2,27 @@ const Shape = require('./Shape');
 const { Point } = require('./utils');
 
 module.exports = class Text extends Shape {
-  constructor (x, y, text = '') {
+  constructor (text = '', x = 0, y = 0) {
     super('Text');
     this.pos = new Point(x, y);
     this.text = text;
-    this.font = 'Arial';
+    this.fontSize = '12px';
+    this.fontFamily = 'Arial';
   }
   _renderSelf () {
     var pos = this.getPos(), c = this.context;
-    // TODO: render
+    c.save();
+    this.transformContext();
+    c.font = this.fontSize + ' ' + this.fontFamily;
+    if (this.border) {
+      c.strokeStyle = this.border.color;
+      // lineWidth does not appear to work, but it does not seem entirely necessary.
+      c.lineWidth = this.border.width;
+      c.strokeText(this.text, pos.x, pos.y);
+    }
+    c.fillStyle = this.color;
+    c.fillText(this.text, pos.x, pos.y);
+    c.restore();
   }
   get center () {
     /**

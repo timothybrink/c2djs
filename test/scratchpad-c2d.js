@@ -59,6 +59,14 @@ function init() {
     x: 2,
     y: 4
   };
+
+  text = new c2d.Text('testing', 100, 200);
+  text.fontSize = '20px';
+  text.fontFamily = 'serif';
+  text.color = 'red';
+  text.rotation = .1;
+  text.border = new c2d.Border('blue');
+  scene.appendChild(text);
   
   // background color
   scene.backgroundColor = '#e0e0e0';
