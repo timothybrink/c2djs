@@ -9,10 +9,7 @@ class Circle extends Shape {
       // Radius
       this.r = r;
     }
-    _renderSelf () {
-      var pos = this.getPos(), c = this.context;
-      c.save();
-      this.transformContext();
+    renderSelf (c, pos) {
       if (this.shadow) {
         c.shadowBlur = this.shadow.blur;
         c.shadowColor = this.shadow.color;
@@ -32,7 +29,6 @@ class Circle extends Shape {
       c.arc(pos.x, pos.y, this.r, 0, 2 * Math.PI);
       c.closePath();
       c.fill();
-      c.restore();
     }
     get center () {
       return this.getPos();

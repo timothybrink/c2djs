@@ -9,12 +9,7 @@ module.exports = class Text extends Shape {
     this.fontSize = '12px';
     this.fontFamily = 'Arial';
   }
-  _renderSelf () {
-    var pos = this.getPos(), c = this.context;
-
-    c.save();
-    this.transformContext();
-
+  renderSelf (c, pos) {
     c.font = this.fontSize + ' ' + this.fontFamily;
 
     if (this.shadow) {
@@ -33,8 +28,6 @@ module.exports = class Text extends Shape {
 
     c.fillStyle = this.color;
     c.fillText(this.text, pos.x, pos.y);
-    
-    c.restore();
   }
   get center () {
     /**

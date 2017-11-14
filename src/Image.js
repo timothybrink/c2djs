@@ -45,10 +45,7 @@ class Image extends Shape {
      */
     this.color = 'rgba(0, 0, 0, 0)';
   }
-  _renderSelf () {
-    var pos = this.getPos(), c = this.context;
-    c.save();
-    this.transformContext();
+  renderSelf (c, pos) {
     if (this.shadow) {
       c.shadowBlur = this.shadow.blur;
       c.shadowColor = this.shadow.color;
@@ -65,7 +62,6 @@ class Image extends Shape {
       c.strokeRect(pos.x - this.border.width / 2, pos.y - this.border.width / 2, this.width + this.border.width, this.height + this.border.width);
     }
     c.drawImage(this.image, pos.x, pos.y, this.width, this.height);
-    c.restore();
   }
   get center () {
     var pos = this.getPos();

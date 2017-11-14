@@ -30,12 +30,9 @@ class Scene extends Shape {
   clear () {
     this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
   }
-  _renderSelf () {
-    var c = this.context;
-    c.save();
+  renderSelf (c) {
     c.fillStyle = this.backgroundColor;
     c.fillRect(0, 0, c.canvas.width, c.canvas.height);
-    c.restore();
   }
 }
 
