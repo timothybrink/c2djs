@@ -39,6 +39,49 @@ class Rectangle extends Shape {
     this.width = w;
   }
   /**
+   * The renderSelf() function (or the deprecated _renderSelf() function
+   * shown below) must be included if you want your shape to be rendered.
+   * @param {CanvasRenderingContext2D} c The canvas context.
+   * @param {Point} pos A point designating where the Shape must be drawn.
+   */
+  renderSelf (c, pos) {
+    /**
+     * Use the naming conventions above (c = context, pos = absolute position)
+     * to avoid confusion.
+     * Also, when rendering areas and borders, try to make the code as simple
+     * and short as possible.
+     * The context has already been saved and transformed, and will be restored
+     * after this function returns.
+     */
+    
+    /**
+     * The shadow and border here are drawn if they are not null.
+     */
+    if (this.shadow) {
+      c.shadowBlur = this.shadow.blur;
+      c.shadowColor = this.shadow.color;
+      c.shadowOffsetX = this.shadow.offsetX;
+      c.shadowOffsetY = this.shadow.offsetY;
+    }
+    /**
+     * Borders must be rendered immediately outside of the shape's area.
+     * That is, they cannot overlap with the shape's area color, nor can
+     * there be any gap between the border and the area.
+     */
+    if (this.border) {
+      c.strokeStyle = this.border.color;
+      c.lineWidth = this.border.width;
+      c.strokeRect(pos.x - (this.border.width / 2), pos.y - (this.border.width / 2), this.width + this.border.width, this.height + this.border.width);
+    }
+    /**
+     * The area is drawn regardless of if the user wants it there or not.
+     */
+    c.fillStyle = this.color;
+    c.fillRect(pos.x, pos.y, this.width, this.height);
+  }
+  /**
+   * NOTE: _renderSelf() is deprecated! Use renderSelf(context, pos) instead.
+   *       See the renderSelf() notes above for more information.
    * If you wish your shape to be rendered, you must have a
    * _renderSelf() function defined here, in your class definition.
    */

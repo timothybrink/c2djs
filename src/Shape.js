@@ -10,7 +10,7 @@ class Shape {
    * The constructor just defines some variables to null/default values.
    * @param {string} shapeName   The class name of the shape
    */
-  constructor (shapeName) {
+  constructor(shapeName) {
     this.children = [];
     /**
      * Each shape has its own context, which is
@@ -41,7 +41,7 @@ class Shape {
     this.border = null;
     this.shadow = null;
     /**
-     * The ._shapeType is a programmatic way to determine what a
+     * The ._shapeName is a programmatic way to determine what a
      * shape is.
      */
     this._shapeName = shapeName;
@@ -49,17 +49,17 @@ class Shape {
   /**
    * This function appends a child to .children.
    */
-  appendChild (child) {
+  appendChild(child) {
     this.children.push(child);
     child.context = this.context;
     child.parent = this;
   }
   /**
-   * Same as appendChild, but the child is inserted so that it has
+   * Same as appendChild, but the child is inserted so that it recieves
    * the index specified.
    */
-  insertChild (child, index) {
-    this.children = this.children.slice(0,index).concat(child).concat(this.children.slice(index));
+  insertChild(child, index) {
+    this.children = this.children.slice(0, index).concat(child).concat(this.children.slice(index));
     child.context = this.context;
     child.parent = this;
   }
@@ -68,13 +68,13 @@ class Shape {
    * parent; it simply sets its own ._ctx property and the .context
    * properties of all its children.
    */
-  set context (ctx) {
+  set context(ctx) {
     this._ctx = ctx;
     this.children.forEach(child => {
       child.context = ctx;
     });
   }
-  get context () {
+  get context() {
     return this._ctx;
   }
   /**
@@ -91,7 +91,7 @@ class Shape {
    * The shapes will be rendered in this order:
    * Scene, parent0, child0, child1, parent1, child2, child3
    */
-  render () {
+  render() {
     // Check if this shape has a context:
     if (this.context === null) {
       throw new Error('Shape has no context!');
@@ -101,11 +101,26 @@ class Shape {
     if (this._shapeName === 'Scene') {
       this.clear();
     }
-    // Call _renderSelf() if it exists (the check is for 
-    // non-rendering shapes like Scene):
-    if (this._renderSelf) {
-      this._renderSelf();
+
+    // renderSelf(context) is the new rendering function, which does some basic
+    // tasks outside the renderSelf function rather than making them mandatory inside.
+    if (typeof this.renderSelf === 'undefined') {
+      // Call _renderSelf() (deprecated) if it exists:
+      if (this._renderSelf) {
+        if (!this._hasWarned_renderSelf) {
+          this._hasWarned_renderSelf = true;
+          console.warn('_renderSelf() is deprecated! Use renderSelf(context, pos) instead. (' + this._shapeName + ')');
+        }
+        this._renderSelf();
+      }
+    } else {
+      let c = this.context;
+      c.save();
+      this.transformContext();
+      this.renderSelf(c, this.getPos());
+      c.restore();
     }
+
     // Render children:
     this.children.forEach(function (child) {
       child.render();
@@ -116,7 +131,7 @@ class Shape {
    * It performs the positioning checks.
    * This position is what the shape must be drawn relative to.
    */
-  getPos () {
+  getPos() {
     if (this.positioning === POSITIONING_RELATIVE) {
       let absPos = new Point();
       let parentAbsPos;
@@ -126,18 +141,18 @@ class Shape {
         parentAbsPos = new Point(0, 0);
       }
       absPos.x = parentAbsPos.x + this.pos.x;
-      absPos.y = parentAbsPos.y + this.pos.y;	
+      absPos.y = parentAbsPos.y + this.pos.y;
       return absPos;
     } else if (this.positioning === POSITIONING_ABSOLUTE) {
       return this.pos;
     } else {
-      throw new Error(`'${ this.positioning }' positioning does not exist!`);
+      throw new Error(`'${this.positioning}' positioning does not exist!`);
     }
   }
   /**
    * This is called by a _renderSelf() function to position the context properly.
    */
-  transformContext () {
+  transformContext() {
     if (this._shapeName === 'Scene') {
       return;
     }
