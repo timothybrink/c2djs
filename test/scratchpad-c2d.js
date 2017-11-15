@@ -60,7 +60,7 @@ function init() {
     y: 4
   };
 
-  text = new c2d.Text('testing', 100, 200);
+  let text = new c2d.Text('testing', 100, 200);
   text.fontSize = '20px';
   text.fontFamily = 'serif';
   text.color = 'red';
@@ -68,6 +68,25 @@ function init() {
   text.border = new c2d.Border('blue');
   text.shadow = new c2d.Shadow('green', 10, 10, 10);
   scene.appendChild(text);
+
+  hitRegRect = new c2d.Rectangle(200, 200, 200, 200);
+  hitRegRect.color = 'black';
+  let hitReg = new c2d.HitRegion(0, 0, 200, 200);
+  hitReg.addEventListener('click', function (e) {
+    location.reload();
+  });
+  hitReg.addEventListener('c2d-mouseinout', function (e, type) {
+    if (type === 'mousein') {
+      hitRegRect.color = '#777';
+      e.target.style.cursor = 'pointer';
+    } else {
+      hitRegRect.color = 'black';
+      e.target.style.cursor = 'default';
+    }
+  });
+  hitRegRect.appendChild(hitReg);
+  scene.appendChild(hitRegRect);
+  hitReg.listen();
   
   // background color
   scene.backgroundColor = '#e0e0e0';
