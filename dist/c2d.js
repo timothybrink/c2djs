@@ -130,6 +130,37 @@ exports.Shadow = function () {
   return _class3;
 }();
 
+/**
+ * THIS HAS NOT YET BEEN IMPLEMENTED ANY FURTHER THAN THE CLASS BELOW.
+ * I'm thinking to add a function that determines if a given point is within that shape instance,
+ * and use that for the basic mouse events (click, mouseover, mousedown, mouseup)
+ * when the Scene is created, add to the context.canvas the master event listeners that use a shapes function to determine if the mouse's position
+ * is within their area, and then trigger events accordingly
+ * don't bother with too many events
+ * add a note somewhere that using css percent vals would be result in unpredictable (to say the least) behaviour for everything.
+ * Also, try to use a native method of event creation/etc.
+ * e.g. new Event
+ */
+exports.Listener = function () {
+  /**
+   * Creates a new Listener object to be pushed to Shape.listeners
+   * @param {string}   eventType Listener type (e.g. 'click', 'hover', etc.)
+   * @param {function} handler   Function to call when the event is fired
+   */
+  function _class4(eventType, handler) {
+    _classCallCheck(this, _class4);
+
+    if (typeof eventType === 'undefined' || typeof handler === 'undefined') {
+      throw new Error('Listener constructor requires two arguments!');
+    } else {
+      this.eventType = eventType;
+      this.handler = handler;
+    }
+  }
+
+  return _class4;
+}();
+
 /***/ }),
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -191,7 +222,7 @@ var Shape = function () {
     this.border = null;
     this.shadow = null;
     /**
-     * The ._shapeType is a programmatic way to determine what a
+     * The ._shapeName is a programmatic way to determine what a
      * shape is.
      */
     this._shapeName = shapeName;
@@ -209,7 +240,7 @@ var Shape = function () {
       child.parent = this;
     }
     /**
-     * Same as appendChild, but the child is inserted so that it has
+     * Same as appendChild, but the child is inserted so that it recieves
      * the index specified.
      */
 
@@ -253,11 +284,26 @@ var Shape = function () {
       if (this._shapeName === 'Scene') {
         this.clear();
       }
-      // Call _renderSelf() if it exists (the check is for 
-      // non-rendering shapes like Scene):
-      if (this._renderSelf) {
-        this._renderSelf();
+
+      // renderSelf(context) is the new rendering function, which does some basic
+      // tasks outside the renderSelf function rather than making them mandatory inside.
+      if (typeof this.renderSelf === 'undefined') {
+        // Call _renderSelf() (deprecated) if it exists:
+        if (this._renderSelf) {
+          if (!this._hasWarned_renderSelf) {
+            this._hasWarned_renderSelf = true;
+            console.warn('_renderSelf() is deprecated! Use renderSelf(context, pos) instead. (' + this._shapeName + ')');
+          }
+          this._renderSelf();
+        }
+      } else {
+        var c = this.context;
+        c.save();
+        this.transformContext();
+        this.renderSelf(c, this.getPos());
+        c.restore();
       }
+
       // Render children:
       this.children.forEach(function (child) {
         child.render();
@@ -336,12 +382,12 @@ module.exports = Shape;
 
 "use strict";
 /**
- * c2d.js v1.3
+ * c2d.js v1.4
  * c2d.js is a low-level 2D canvas wrapper that makes working with simple shapes
  * and sprites simple and easy. It uses a heirarchical object-oriented approach
  * to creating and manipulating shapes.
  * Ideas/todo:
- *  - Add Text, Gradient, Polygon, Line, Arc, and Path (in order of importance) classes
+ *  - Add HitRegion, Gradient, Polygon, Line, Arc, and Path (in order of importance) classes
  *  - Possibly introduce methods for transforming the coordinate matrix through
  *    the Scene class, or have some useful presets (e.g. designate the visible area
  *    as the 1st or 1st and 2nd quadrants of a Cartesian coordinate plane rather
@@ -369,6 +415,8 @@ window.c2d = {};
   c2d.Circle = __webpack_require__(4);
   c2d.Rectangle = __webpack_require__(5);
   c2d.Image = __webpack_require__(6);
+  c2d.Text = __webpack_require__(7);
+  c2d.HitRegion = __webpack_require__(8);
 })();
 
 /***/ }),
@@ -433,13 +481,10 @@ var Scene = function (_Shape) {
       this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
     }
   }, {
-    key: '_renderSelf',
-    value: function _renderSelf() {
-      var c = this.context;
-      c.save();
+    key: 'renderSelf',
+    value: function renderSelf(c) {
       c.fillStyle = this.backgroundColor;
       c.fillRect(0, 0, c.canvas.width, c.canvas.height);
-      c.restore();
     }
   }]);
 
@@ -484,12 +529,8 @@ var Circle = function (_Shape) {
   }
 
   _createClass(Circle, [{
-    key: '_renderSelf',
-    value: function _renderSelf() {
-      var pos = this.getPos(),
-          c = this.context;
-      c.save();
-      this.transformContext();
+    key: 'renderSelf',
+    value: function renderSelf(c, pos) {
       if (this.shadow) {
         c.shadowBlur = this.shadow.blur;
         c.shadowColor = this.shadow.color;
@@ -509,7 +550,6 @@ var Circle = function (_Shape) {
       c.arc(pos.x, pos.y, this.r, 0, 2 * Math.PI);
       c.closePath();
       c.fill();
-      c.restore();
     }
   }, {
     key: 'center',
@@ -590,12 +630,58 @@ var Rectangle = function (_Shape) {
     return _this;
   }
   /**
-   * If you wish your shape to be rendered, you must have a
-   * _renderSelf() function defined here, in your class definition.
+   * The renderSelf() function (or the deprecated _renderSelf() function
+   * shown below) must be included if you want your shape to be rendered.
+   * @param {CanvasRenderingContext2D} c The canvas context.
+   * @param {Point} pos A point designating where the Shape must be drawn.
    */
 
 
   _createClass(Rectangle, [{
+    key: 'renderSelf',
+    value: function renderSelf(c, pos) {
+      /**
+       * Use the naming conventions above (c = context, pos = absolute position)
+       * to avoid confusion.
+       * Also, when rendering areas and borders, try to make the code as simple
+       * and short as possible.
+       * The context has already been saved and transformed, and will be restored
+       * after this function returns.
+       */
+
+      /**
+       * The shadow and border here are drawn if they are not null.
+       */
+      if (this.shadow) {
+        c.shadowBlur = this.shadow.blur;
+        c.shadowColor = this.shadow.color;
+        c.shadowOffsetX = this.shadow.offsetX;
+        c.shadowOffsetY = this.shadow.offsetY;
+      }
+      /**
+       * Borders must be rendered immediately outside of the shape's area.
+       * That is, they cannot overlap with the shape's area color, nor can
+       * there be any gap between the border and the area.
+       */
+      if (this.border) {
+        c.strokeStyle = this.border.color;
+        c.lineWidth = this.border.width;
+        c.strokeRect(pos.x - this.border.width / 2, pos.y - this.border.width / 2, this.width + this.border.width, this.height + this.border.width);
+      }
+      /**
+       * The area is drawn regardless of if the user wants it there or not.
+       */
+      c.fillStyle = this.color;
+      c.fillRect(pos.x, pos.y, this.width, this.height);
+    }
+    /**
+     * NOTE: _renderSelf() is deprecated! Use renderSelf(context, pos) instead.
+     *       See the renderSelf() notes above for more information.
+     * If you wish your shape to be rendered, you must have a
+     * _renderSelf() function defined here, in your class definition.
+     */
+
+  }, {
     key: '_renderSelf',
     value: function _renderSelf() {
       /**
@@ -739,12 +825,8 @@ var Image = function (_Shape) {
   }
 
   _createClass(Image, [{
-    key: '_renderSelf',
-    value: function _renderSelf() {
-      var pos = this.getPos(),
-          c = this.context;
-      c.save();
-      this.transformContext();
+    key: 'renderSelf',
+    value: function renderSelf(c, pos) {
       if (this.shadow) {
         c.shadowBlur = this.shadow.blur;
         c.shadowColor = this.shadow.color;
@@ -761,7 +843,6 @@ var Image = function (_Shape) {
         c.strokeRect(pos.x - this.border.width / 2, pos.y - this.border.width / 2, this.width + this.border.width, this.height + this.border.width);
       }
       c.drawImage(this.image, pos.x, pos.y, this.width, this.height);
-      c.restore();
     }
   }, {
     key: 'center',
@@ -775,6 +856,181 @@ var Image = function (_Shape) {
 }(Shape);
 
 module.exports = Image;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Shape = __webpack_require__(1);
+
+var _require = __webpack_require__(0),
+    Point = _require.Point;
+
+module.exports = function (_Shape) {
+  _inherits(Text, _Shape);
+
+  function Text() {
+    var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    var x = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var y = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+    _classCallCheck(this, Text);
+
+    var _this = _possibleConstructorReturn(this, (Text.__proto__ || Object.getPrototypeOf(Text)).call(this, 'Text'));
+
+    _this.pos = new Point(x, y);
+    _this.text = text;
+    _this.fontSize = '12px';
+    _this.fontFamily = 'Arial';
+    return _this;
+  }
+
+  _createClass(Text, [{
+    key: 'renderSelf',
+    value: function renderSelf(c, pos) {
+      c.font = this.fontSize + ' ' + this.fontFamily;
+
+      if (this.shadow) {
+        c.shadowBlur = this.shadow.blur;
+        c.shadowColor = this.shadow.color;
+        c.shadowOffsetX = this.shadow.offsetX;
+        c.shadowOffsetY = this.shadow.offsetY;
+      }
+
+      if (this.border) {
+        c.strokeStyle = this.border.color;
+        // lineWidth does not appear to work, but it does not seem entirely necessary.
+        c.lineWidth = this.border.width;
+        c.strokeText(this.text, pos.x, pos.y);
+      }
+
+      c.fillStyle = this.color;
+      c.fillText(this.text, pos.x, pos.y);
+    }
+  }, {
+    key: 'center',
+    get: function get() {
+      /**
+       * This doesn't actually return the center, but whatever. I don't know how I would get
+       * the actual center, not to mention the fact that I don't think Text is the sort of 
+       * shape with which it really matters.
+       */
+      return this.getPos();
+    }
+  }]);
+
+  return Text;
+}(Shape);
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Shape = __webpack_require__(1);
+
+var _require = __webpack_require__(0),
+    Point = _require.Point;
+
+module.exports = function (_Shape) {
+  _inherits(HitRegion, _Shape);
+
+  /**
+   * HitRegion constructor.
+   * @param {Number} x Distance from left
+   * @param {Number} y Distance from top
+   * @param {Number} w Width of rectangle
+   * @param {Number} h Height of rectangle
+   */
+  function HitRegion() {
+    var x = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+    var y = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var w = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    var h = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+
+    _classCallCheck(this, HitRegion);
+
+    var _this = _possibleConstructorReturn(this, (HitRegion.__proto__ || Object.getPrototypeOf(HitRegion)).call(this, 'HitRegion'));
+
+    _this.pos = new Point(x, y);
+    _this.height = h;
+    _this.width = w;
+
+    _this.handlers = [];
+    return _this;
+  }
+
+  _createClass(HitRegion, [{
+    key: 'addEventListener',
+    value: function addEventListener(eventType, handler) {
+      function Handler(e, h) {
+        this.eventType = e;
+        this.handler = h;
+      }
+
+      this.handlers.push(new Handler(eventType, handler));
+    }
+  }, {
+    key: 'listen',
+    value: function listen() {
+      var _this2 = this;
+
+      if (!this.context) throw new Error('Context is not defined!');
+
+      this.handlers.forEach(function (h) {
+        if (h.eventType === 'c2d-mouseinout') {
+          _this2.context.canvas.addEventListener('mousemove', function (e) {
+
+            if (typeof window._c2dHandler_wasIn === 'undefined') {
+              window._c2dHandler_wasIn = false;
+            }
+
+            var pos = _this2.getPos();
+
+            var isIn = e.x > pos.x && e.x < pos.x + _this2.width && e.y > pos.y && e.y < pos.y + _this2.height;
+
+            if (window._c2dHandler_wasIn && !isIn) {
+              h.handler(e, 'mouseout');
+            } else if (!window._c2dHandler_wasIn && isIn) {
+              h.handler(e, 'mousein');
+            }
+            window._c2dHandler_wasIn = isIn;
+          });
+        } else {
+          _this2.context.canvas.addEventListener(h.eventType, function (e) {
+            var pos = _this2.getPos();
+            if (e.x > pos.x && e.x < pos.x + _this2.width && e.y > pos.y && e.y < pos.y + _this2.height) {
+              h.handler(e);
+            }
+          });
+        }
+      });
+    }
+  }]);
+
+  return HitRegion;
+}(Shape);
 
 /***/ })
 /******/ ]);
