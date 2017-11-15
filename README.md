@@ -2,6 +2,8 @@
 
 Simple object-oriented wrapper over the Canvas2D API.
 
+Documentation can be found (usually) within source files; especially see test/test.js for usage example.
+
 Still in (very irregular) development.
 
 ### Install
