@@ -150,7 +150,7 @@ class Shape {
     }
   }
   /**
-   * This is called by a _renderSelf() function to position the context properly.
+   * This is called by a render() function to position the context properly.
    */
   transformContext() {
     if (this._shapeName === 'Scene') {
