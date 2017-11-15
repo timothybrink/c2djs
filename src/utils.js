@@ -35,30 +35,3 @@ exports.Shadow = class {
     this.offsetY = offsetY;
   }
 };
-
-/**
- * THIS HAS NOT YET BEEN IMPLEMENTED ANY FURTHER THAN THE CLASS BELOW.
- * I'm thinking to add a function that determines if a given point is within that shape instance,
- * and use that for the basic mouse events (click, mouseover, mousedown, mouseup)
- * when the Scene is created, add to the context.canvas the master event listeners that use a shapes function to determine if the mouse's position
- * is within their area, and then trigger events accordingly
- * don't bother with too many events
- * add a note somewhere that using css percent vals would be result in unpredictable (to say the least) behaviour for everything.
- * Also, try to use a native method of event creation/etc.
- * e.g. new Event
- */
-exports.Listener = class {
-  /**
-   * Creates a new Listener object to be pushed to Shape.listeners
-   * @param {string}   eventType Listener type (e.g. 'click', 'hover', etc.)
-   * @param {function} handler   Function to call when the event is fired
-   */
-  constructor (eventType, handler) {
-    if (typeof eventType === 'undefined' || typeof handler === 'undefined') {
-      throw new Error('Listener constructor requires two arguments!');
-    } else {
-      this.eventType = eventType;
-      this.handler = handler;
-    }
-  }
-}
