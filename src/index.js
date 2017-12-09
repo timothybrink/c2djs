@@ -4,7 +4,7 @@
  * and sprites simple and easy. It uses a heirarchical object-oriented approach
  * to creating and manipulating shapes.
  * Ideas/todo:
- *  - Add HitRegion, Gradient, Polygon, Line, Arc, and Path (in order of importance) classes
+ *  - Add Gradient, Polygon, and Arc (to Pen) (in order of importance) classes
  *  - Possibly introduce methods for transforming the coordinate matrix through
  *    the Scene class, or have some useful presets (e.g. designate the visible area
  *    as the 1st or 1st and 2nd quadrants of a Cartesian coordinate plane rather
