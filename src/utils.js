@@ -2,7 +2,7 @@ exports.POSITIONING_ABSOLUTE = 'absolute';
 exports.POSITIONING_RELATIVE = 'relative';
   
 exports.Point = class {
-  constructor (x, y) {
+  constructor (x = 0, y = 0) {
     this.x = x;
     this.y = y;
   }
