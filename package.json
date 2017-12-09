@@ -6,7 +6,8 @@
   "scripts": {
     "build": "./node_modules/.bin/webpack",
     "watch": "./node_modules/.bin/webpack --watch",
-    "start": "./node_modules/.bin/webpack-dev-server --hot --inline"
+    "start": "./node_modules/.bin/webpack-dev-server --hot --inline",
+    "debug": "npm start"
   },
   "author": "TBrink",
   "license": "MIT",
