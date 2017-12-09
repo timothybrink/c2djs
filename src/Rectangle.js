@@ -93,7 +93,7 @@ class Rectangle extends Shape {
      * Also, when rendering areas and borders, try to make the code
      * as simple and short as possible.
      */
-    var pos = this.getPos(), c = this.context;
+    let pos = this.getPos(), c = this.context;
     /**
      * Save and restore the context as shown to avoid conflicts.
      * Make sure it is saved before you make any changes to it.
@@ -141,7 +141,7 @@ class Rectangle extends Shape {
    * (using getPos() to get the absolute position)
    */
   get center () {
-    var pos = this.getPos();
+    let pos = this.getPos();
     return new Point(pos.x + this.width / 2, pos.y + this.height / 2);
   }
 }

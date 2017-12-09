@@ -32,20 +32,20 @@ module.exports = class HitRegion extends Shape {
       if (h.eventType === 'c2d-mouseinout') {
         this.context.canvas.addEventListener('mousemove', e => {
 
-          if (typeof window._c2dHandler_wasIn === 'undefined') {
-            window._c2dHandler_wasIn = false;
+          if (typeof window._c2dHandlerWasIn === 'undefined') {
+            window._c2dHandlerWasIn = false;
           }
 
           let pos = this.getPos();
 
           let isIn = (e.x > pos.x && e.x < pos.x + this.width && e.y > pos.y && e.y < pos.y + this.height);
 
-          if (window._c2dHandler_wasIn && !isIn) {
+          if (window._c2dHandlerWasIn && !isIn) {
             h.handler(e, 'mouseout');
-          } else if (!window._c2dHandler_wasIn && isIn) {
+          } else if (!window._c2dHandlerWasIn && isIn) {
             h.handler(e, 'mousein');
           }
-          window._c2dHandler_wasIn = isIn;
+          window._c2dHandlerWasIn = isIn;
         });
       } else {
         this.context.canvas.addEventListener(h.eventType, e => {
@@ -57,4 +57,4 @@ module.exports = class HitRegion extends Shape {
       }
     });
   }
-}
+};

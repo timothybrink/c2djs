@@ -1,5 +1,4 @@
 const Shape = require('./Shape');
-const { Point } = require('./utils');
 
 // The Scene class.
 class Scene extends Shape {

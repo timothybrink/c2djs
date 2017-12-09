@@ -15,23 +15,23 @@
 'use strict';
 window.c2d = {};
 (function () {
-  c2d.Scene = require('./Scene');
-  c2d.Shape = require('./Shape');
+  window.c2d.Scene = require('./Scene');
+  window.c2d.Shape = require('./Shape');
 
-  var utils = require('./utils');
-  c2d.POSITIONING_ABSOLUTE = utils.POSITIONING_ABSOLUTE;
-  c2d.POSITIONING_RELATIVE = utils.POSITIONING_RELATIVE;
-  c2d.Point = utils.Point;
-  c2d.Shadow = utils.Shadow;
-  c2d.Border = utils.Border;
+  const utils = require('./utils');
+  window.c2d.POSITIONING_ABSOLUTE = utils.POSITIONING_ABSOLUTE;
+  window.c2d.POSITIONING_RELATIVE = utils.POSITIONING_RELATIVE;
+  window.c2d.Point = utils.Point;
+  window.c2d.Shadow = utils.Shadow;
+  window.c2d.Border = utils.Border;
   
   /**
    * Here we define all the Shape sub-classes.
    */  
-  c2d.Circle = require('./Circle');
-  c2d.Rectangle = require('./Rectangle');
-  c2d.Image = require('./Image');
-  c2d.Text = require('./Text');
-  c2d.HitRegion = require('./HitRegion');
-  c2d.Pen = require('./Pen');
-})()
+  window.c2d.Circle = require('./Circle');
+  window.c2d.Rectangle = require('./Rectangle');
+  window.c2d.Image = require('./Image');
+  window.c2d.Text = require('./Text');
+  window.c2d.HitRegion = require('./HitRegion');
+  window.c2d.Pen = require('./Pen');
+})();

@@ -95,7 +95,6 @@ class Shape {
     // Check if this shape has a context:
     if (this.context === null) {
       throw new Error('Shape has no context!');
-      return;
     }
     // If we are rendering a Scene, clear() it first:
     if (this._shapeName === 'Scene') {
@@ -107,8 +106,8 @@ class Shape {
     if (typeof this.renderSelf === 'undefined') {
       // Call _renderSelf() (deprecated) if it exists:
       if (this._renderSelf) {
-        if (!this._hasWarned_renderSelf) {
-          this._hasWarned_renderSelf = true;
+        if (!this._hasWarnedRenderSelf) {
+          this._hasWarnedRenderSelf = true;
           console.warn('_renderSelf() is deprecated! Use renderSelf(context, pos) instead. (' + this._shapeName + ')');
         }
         this._renderSelf();
@@ -162,7 +161,7 @@ class Shape {
      * (NEW in 1.3)
      */
     if (this.rotation !== 0) {
-      var c = this.context, center = this.center;
+      let c = this.context, center = this.center;
       c.translate(center.x, center.y);
       c.rotate(this.rotation);
       c.translate(-center.x, -center.y);

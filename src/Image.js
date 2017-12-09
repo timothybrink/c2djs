@@ -64,7 +64,7 @@ class Image extends Shape {
     c.drawImage(this.image, pos.x, pos.y, this.width, this.height);
   }
   get center () {
-    var pos = this.getPos();
+    let pos = this.getPos();
     return new Point(pos.x + this.width / 2, pos.y + this.height / 2);
   }
 }

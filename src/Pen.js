@@ -6,6 +6,7 @@ const { Point } = require('./utils');
  * @param {Array} arr Input array
  */
 function arrayLast(arr) {
+  'use strict';
   return arr[arr.length - 1];
 }
 
@@ -66,7 +67,7 @@ module.exports = class Pen extends Shape {
    * @param {Point} pos The absolute position of the Path object
    */
   _pathSectionDrawer(c, pos) {
-    return function (pathSection, index, path) {
+    return function (pathSection) {
       if (pathSection.action === 'penState'|| pathSection.action === 'start') return;
       if (pathSection.penDown) {
         c.lineTo(pos.x + pathSection.pos.x, pos.y + pathSection.pos.y);
