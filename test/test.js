@@ -88,6 +88,15 @@ function init() {
   scene.appendChild(hitRegRect);
   hitReg.listen();
   
+  let pen = new c2d.Pen(2, '#ff0000');
+  pen.up()
+    .to(20, 327)
+    .down()
+    .to(10, 337)
+    .by(10, 10)
+    .by(-10, 5);
+  scene.appendChild(pen);
+
   // background color
   scene.backgroundColor = '#e0e0e0';
 }
