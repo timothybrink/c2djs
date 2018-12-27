@@ -20,9 +20,9 @@ img.addEventListener('load', function () {
 function init() {
   'use strict';
   rect = new c2d.Rectangle(0, 0, 100, 50);
-  rect.pos = new c2d.Point(20, 20);
-  rect.rotation = (Math.PI / 180) * 10;
-  let rect2 = new c2d.Rectangle(10, 10, 80, 30);
+  rect.pos = new c2d.Point(20, 20);                          // <-- the pos is set by the constructor as specified by the first
+  rect.rotation = (Math.PI / 180) * 15; //about the centre   // two arguments of the Rectangle contstructor, so this is not
+  let rect2 = new c2d.Rectangle(10, 10, 80, 30);             // necessary practically speaking.
   rect2.shadow = new c2d.Shadow('white', 10, 0, 0);
   rect2.color = '#f00';
   rect2.border = new c2d.Border('blue', 2);
@@ -38,6 +38,11 @@ function init() {
   //   circle.shadow = new c2d.Shadow('red', 10, 3, 3);
   scene.appendChild(circle);
   
+  circle.v = {
+    x: 2,
+    y: 4
+  };
+  
   image = new c2d.Image(img, 130, 10);
   image.border = new c2d.Border('blue');
   image.color = '#0f0';
@@ -50,11 +55,6 @@ function init() {
   box.appendChild(rect3);
   rect3.rotation = 0.5;
   scene.insertChild(image, 1);
-  
-  circle.v = {
-    x: 2,
-    y: 4
-  };
 
   let text = new c2d.Text('testing', 100, 200);
   text.fontSize = '20px';
