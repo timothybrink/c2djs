@@ -32,11 +32,26 @@ function init() {
   circle = new c2d.Circle(60, 60, 30);
   let rotInd = new c2d.Rectangle(10, 10, 10, 10);
   rotInd.shadow = new c2d.Shadow('#aaf', 5, 0, 0);
+  let hitRegCircle = new c2d.HitRegion(0, 0, 60, 60);
+  hitRegCircle.addEventListener('click', function () {
+    location.reload();
+  });
+  hitRegCircle.addEventListener('c2d-mouseinout', function (e, type) {
+    if (type === 'mousein') {
+      rotInd.color = '#777';
+      e.target.style.cursor = 'pointer';
+    } else {
+      rotInd.color = 'black';
+      e.target.style.cursor = 'default';
+    }
+  });
+  rotInd.appendChild(hitRegCircle);
   circle.appendChild(rotInd);
   circle.color = '#888';
   //   circle.border = new c2d.Border('blue', 2);
   //   circle.shadow = new c2d.Shadow('red', 10, 3, 3);
   scene.appendChild(circle);
+  hitRegCircle.listen();
   
   circle.v = {
     x: 2,
