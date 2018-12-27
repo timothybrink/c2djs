@@ -32,20 +32,20 @@ module.exports = class HitRegion extends Shape {
       if (handler.eventType === 'c2d-mouseinout') {
         this.context.canvas.addEventListener('mousemove', e => {
 
-          if (typeof window._c2dHandlerWasIn === 'undefined') {
-            window._c2dHandlerWasIn = false;
+          if (typeof this._c2dHandlerWasIn === 'undefined') {
+            this._c2dHandlerWasIn = false;
           }
 
           let pos = this.getPos();
 
           let isIn = (e.x > pos.x && e.x < pos.x + this.width && e.y > pos.y && e.y < pos.y + this.height);
 
-          if (window._c2dHandlerWasIn && !isIn) {
+          if (this._c2dHandlerWasIn && !isIn) {
             handler.handler(e, 'mouseout');
-          } else if (!window._c2dHandlerWasIn && isIn) {
+          } else if (!this._c2dHandlerWasIn && isIn) {
             handler.handler(e, 'mousein');
           }
-          window._c2dHandlerWasIn = isIn;
+          this._c2dHandlerWasIn = isIn;
         });
       } else {
         this.context.canvas.addEventListener(handler.eventType, e => {
