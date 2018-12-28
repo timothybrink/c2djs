@@ -78,7 +78,7 @@ class Shape {
     return this._ctx;
   }
   /**
-   * The render function calls _renderSelf() and render() for each
+   * The render function calls renderSelf() and render() for each
    * of this shape's children.
    * Shapes are rendered in a depth-first manner.
    */
@@ -92,17 +92,10 @@ class Shape {
       this.clear();
     }
 
-    // renderSelf(context) is the new rendering function, which does some basic
-    // tasks outside the renderSelf function rather than making them mandatory inside.
+    // renderSelf(context) is the rendering function, which does some basic
+    // tasks outside the renderSelf function.
     if (typeof this.renderSelf === 'undefined') {
-      // Call _renderSelf() (deprecated) if it exists:
-      if (this._renderSelf) {
-        if (!this._hasWarnedRenderSelf) {
-          this._hasWarnedRenderSelf = true;
-          console.warn('_renderSelf() is deprecated! Use renderSelf(context, pos) instead. (' + this._shapeName + ')');
-        }
-        this._renderSelf();
-      }
+      throw new Error(`${this.shapeName}.renderSelf is undefined!`);
     } else {
       let c = this.context;
       c.save();
@@ -149,7 +142,6 @@ class Shape {
     this.parent.transformContext();
     /**
      * This just checks if we actually need to rotate anything.
-     * (NEW in 1.3)
      */
     if (this.rotation !== 0) {
       let c = this.context, center = this.center;

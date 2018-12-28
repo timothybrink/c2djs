@@ -39,8 +39,7 @@ class Rectangle extends Shape {
     this.width = w;
   }
   /**
-   * The renderSelf() function (or the deprecated _renderSelf() function
-   * shown below) must be included if you want your shape to be rendered.
+   * The renderSelf() function must be included if you want your shape to be rendered.
    * @param {CanvasRenderingContext2D} c The canvas context.
    * @param {Point} pos A point designating where the Shape must be drawn.
    */
@@ -78,63 +77,6 @@ class Rectangle extends Shape {
      */
     c.fillStyle = this.color;
     c.fillRect(pos.x, pos.y, this.width, this.height);
-  }
-  /**
-   * NOTE: _renderSelf() is deprecated! Use renderSelf(context, pos) instead.
-   *       See the renderSelf() notes above for more information.
-   * If you wish your shape to be rendered, you must have a
-   * _renderSelf() function defined here, in your class definition.
-   */
-  _renderSelf () {
-    /**
-     * The conventions for context and position within _renderSelf()
-     * are as shown here. This is both to avoid multiple function/
-     * getter calls, as well as for brevity and simplicity.
-     * Also, when rendering areas and borders, try to make the code
-     * as simple and short as possible.
-     */
-    let pos = this.getPos(), c = this.context;
-    /**
-     * Save and restore the context as shown to avoid conflicts.
-     * Make sure it is saved before you make any changes to it.
-     */
-    c.save();
-    
-    /**
-     * Call this.transformContext() to rotate the context properly.
-     * It must be called after you save the context and before you
-     * draw anything.
-     */
-    this.transformContext();
-    
-    /**
-     * Note that the shadow and border are drawn if they are not null
-     */
-    if (this.shadow) {
-      c.shadowBlur = this.shadow.blur;
-      c.shadowColor = this.shadow.color;
-      c.shadowOffsetX = this.shadow.offsetX;
-      c.shadowOffsetY = this.shadow.offsetY;
-    }
-    /**
-     * Borders must be rendered immediately outside of the shape's area.
-     * That is, they cannot overlap with the shape's area color, nor can
-     * there be any gap between the border and the area.
-     */
-    if (this.border) {
-      c.strokeStyle = this.border.color;
-      c.lineWidth = this.border.width;
-      c.strokeRect(pos.x - (this.border.width / 2), pos.y - (this.border.width / 2), this.width + this.border.width, this.height + this.border.width);
-    }
-    /**
-     * Note that the area is drawn regardless of if the user wants it
-     * there or not. If you want, you can check to see if the color is
-     * transparent (as in the Image class) for performance reasons,
-     * but that is not mandatory.
-     */
-    c.fillStyle = this.color;
-    c.fillRect(pos.x, pos.y, this.width, this.height);
-    c.restore();
   }
   /**
    * You must have a center getter that gives the centre of your object.
