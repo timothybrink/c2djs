@@ -80,16 +80,7 @@ class Shape {
   /**
    * The render function calls _renderSelf() and render() for each
    * of this shape's children.
-   * Because of the order in which everything is rendered, it ends
-   * up that 2D stacking will occur in a slightly confusing order.
-   * In this family tree:
-   *            Scene
-   *           /     \
-   *     parent0      parent1
-   *    /       \    /       \
-   * child0 child1 child2 child3
-   * The shapes will be rendered in this order:
-   * Scene, parent0, child0, child1, parent1, child2, child3
+   * Shapes are rendered in a depth-first manner.
    */
   render() {
     // Check if this shape has a context:
