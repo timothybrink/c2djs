@@ -1,0 +1,9 @@
+Classes to add:
+Gradient
+Polygon (user-defined points)
+Line (with all the lineStyle properties)
+Arc (with all the lineStyle properties)
+Path (add Lines and Arcs onto a Path to create a shape even more complex than a polygon)
+
+Lots of convenience features would be awesome; for example a better API for HitMethods, maybe the ability to simply
+attach a HitRegion to a shape. Things like simpler Rectangle arguments, etc.
