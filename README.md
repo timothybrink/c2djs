@@ -9,7 +9,7 @@ Still in (very irregular) development.
 ### Install
 
 ```
-git clone https://github.com/tbrink0/c2djs.git
+git clone https://github.com/timothybrink/c2djs.git
 npm install
 ```
 
